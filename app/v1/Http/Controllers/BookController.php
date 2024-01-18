@@ -1,31 +1,32 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\v1\Http\Controllers;
 
-use App\Models\Book;
+use App\v1\Models\Book;
 use Exception;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * @OA\Info(
- *      version="1.0.0",
- *      title="L5 OpenApi",
- *      description="L5 Swagger OpenApi description"
- * )
- *
- */
 class BookController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/books",
-     *     summary="Get a list of books",
-     *     tags={"Books"},
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=400, description="Invalid request")
-     * )
-     */
+
+#[OA\Get(
+    path: "/books",
+    summary: "List all books",
+    security: [
+        [
+            'bearerAuth' => []
+        ]
+    ],
+    tags: ["Admin"],
+    responses: [
+        new OA\Response(response: Response::HTTP_OK, description: "users retrieved success"),
+        new OA\Response(response: Response::HTTP_UNAUTHORIZED, description: "Unauthorized"),
+        new OA\Response(response: Response::HTTP_NOT_FOUND, description: "not found"),
+        new OA\Response(response: Response::HTTP_INTERNAL_SERVER_ERROR, description: "Server Error")
+    ]
+)]
     public function index()
     {
         try {
@@ -69,6 +70,32 @@ class BookController extends Controller
         ], Response::HTTP_OK);
     }
 
+    #[OA\Post(
+        path: "/books",
+        summary: "Create Book",
+        security: [
+            [
+                'bearerAuth' => []
+            ]
+        ],
+        requestBody: new OA\RequestBody(required: true,
+            content: new OA\MediaType(mediaType: "application/x-www-form-urlencoded",
+                schema: new OA\Schema(required: ["title", "author", "year", "description"],
+                    properties: [
+                        new OA\Property(property: 'title', description: "Book title", type: "string"),
+                        new OA\Property(property: 'author', description: "Author", type: "string"),
+                        new OA\Property(property: 'year', description: "Year", type: "string"),
+                        new OA\Property(property: 'description', description: "Short description", type: "string"),
+                        ]
+                ))),
+        tags: ["Admin"],
+        responses: [
+            new OA\Response(response: Response::HTTP_CREATED, description: "Register Successfully"),
+            new OA\Response(response: Response::HTTP_UNPROCESSABLE_ENTITY, description: "Unprocessable entity"),
+            new OA\Response(response: Response::HTTP_BAD_REQUEST, description: "Bad Request"),
+            new OA\Response(response: Response::HTTP_INTERNAL_SERVER_ERROR, description: "Server Error")
+        ]
+    )]
     public function store(Request $request)
     {
         try {
