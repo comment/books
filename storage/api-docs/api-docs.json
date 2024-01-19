@@ -1,62 +1,94 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Bookshop-api Documentation",
-        "description": "bookshop api",
+        "title": "Books Market",
+        "description": "Api Documentation",
+        "contact": {
+            "name": "Sergey",
+            "email": "obrazcovsergey@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
         "version": "1.0.0"
     },
     "servers": [
         {
-            "url": "http://127.0.0.1:8000/api/v1",
-            "description": "local server"
-        },
-        {
-            "url": "http://staging.example.com",
-            "description": "staging server"
-        },
-        {
-            "url": "http://example.com",
-            "description": "production server"
+            "url": "/api/v1"
         }
     ],
     "paths": {
         "/books": {
             "get": {
                 "tags": [
-                    "Admin"
+                    "Books"
                 ],
-                "summary": "List all books",
-                "operationId": "a10e4a818252d65df144d684ab9adc74",
+                "summary": "Get list of books",
+                "description": "Get list of books",
+                "operationId": "index",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "limit",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "the page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "description": "order by title 'asc' or 'desc'",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "users retrieved success"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "404": {
-                        "description": "not found"
-                    },
-                    "500": {
-                        "description": "Server Error"
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "post": {
                 "tags": [
-                    "Admin"
+                    "Books"
                 ],
-                "summary": "Create Book",
-                "operationId": "4ce2db67f52e0575188b064e86d6521c",
+                "summary": "Store book in DB",
+                "description": "Store book in DB",
+                "operationId": "store",
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/x-www-form-urlencoded": {
+                        "application/json": {
                             "schema": {
                                 "required": [
                                     "title",
@@ -66,20 +98,24 @@
                                 ],
                                 "properties": {
                                     "title": {
-                                        "description": "Book title",
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "Harry Potter"
                                     },
                                     "author": {
-                                        "description": "Author",
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "Sergey Abraztsou"
                                     },
                                     "year": {
-                                        "description": "Year",
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1988"
                                     },
                                     "description": {
-                                        "description": "Short description",
-                                        "type": "string"
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "Cool Story ab'ut love and magic!"
                                     }
                                 },
                                 "type": "object"
@@ -88,51 +124,185 @@
                     }
                 },
                 "responses": {
-                    "201": {
-                        "description": "Register Successfully"
-                    },
-                    "422": {
-                        "description": "Unprocessable entity"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Server Error"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/books/{id}": {
-            "get": {
-                "tags": [
-                    "Book"
-                ],
-                "summary": "Show a book",
-                "operationId": "24abf80c2941896c367f0f78fd4aa3fd",
-                "responses": {
                     "200": {
-                        "description": "Successful operation"
-                    },
-                    "400": {
-                        "description": "Invalid request"
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
-        }
-    },
-    "components": {
-        "securitySchemes": {
-            "bearerAuth": {
-                "type": "http",
-                "name": "Authorization",
-                "in": "header",
-                "scheme": "bearer"
+        },
+        "/books/{id}": {
+            "get": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Get Book Detail",
+                "description": "Get Book Detail",
+                "operationId": "show",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of Book",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Update article in DB",
+                "description": "Update article in DB",
+                "operationId": "update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of Book",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "author",
+                                    "year",
+                                    "description"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "Harry Potter"
+                                    },
+                                    "author": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "Sergey Abraztsou"
+                                    },
+                                    "year": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1988"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "Cool Story ab'ut love and magic!"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Books"
+                ],
+                "summary": "Delete a book",
+                "operationId": "e57751810ccf10b92c44975ec632167e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id that to be updated isDelete = 1",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
