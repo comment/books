@@ -2,31 +2,31 @@
 
 namespace App\v1\Http\Controllers;
 
-use App\v1\Models\Book;
+use App\v1\Models\Item;
 use Exception;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class BookController extends Controller
+class ItemController extends Controller
 {
 
     /**
      * @OA\Get(
-     *    path="/books",
-     *    operationId="indexBook",
-     *    tags={"Books"},
-     *    summary="Get list of books",
-     *    description="Get list of books",
+     *    path="/items",
+     *    operationId="indexItem",
+     *    tags={"Items"},
+     *    summary="Get list of items",
+     *    description="Get list of items",
      *     @OA\Parameter(name="limit", in="query", description="limit", required=false,
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Parameter(name="page", in="query", description="the page number", required=false,
      *         @OA\Schema(type="integer")
      *     ),
-     *     @OA\Parameter(name="order", in="query", description="order by title 'asc' or 'desc'", required=false,
+     *     @OA\Parameter(name="order", in="query", description="order by category_id 'asc' or 'desc'", required=false,
      *         @OA\Schema(type="string")
      *     ),
      *
@@ -39,13 +39,13 @@ class BookController extends Controller
      * )
      */
 
-    public function allBooks(Request $request): JsonResponse
+    public function allItems(Request $request): JsonResponse
     {
         $limit = $request->limit ?: 15;
         $order = $request->order == 'asc' ? 'asc' : 'desc';
         try {
-            $books = Book::orderBy('title', $order)
-                ->select('id', 'title', 'author', 'year', 'description')
+            $items = Item::orderBy('category_id', $order)
+                ->select('id', 'category_id')
                 ->where('isActive', 1)
                 ->paginate($limit);
         } catch (Exception $e) {
@@ -56,19 +56,19 @@ class BookController extends Controller
         }
 
         return response()->json([
-            'data' => $books,
+            'data' => $items,
             'message' => 'Succeed'
         ], Response::HTTP_OK);
     }
 
     /**
      * @OA\Get(
-     *    path="/books/{id}",
-     *    operationId="showBook",
-     *    tags={"Books"},
-     *    summary="Get Book Detail",
-     *    description="Get Book Detail",
-     *    @OA\Parameter(name="id", in="path", description="Id of Book", required=true,
+     *    path="/items/{id}",
+     *    operationId="showItem",
+     *    tags={"Items"},
+     *    summary="Get Item Detail",
+     *    description="Get Detail Detail",
+     *    @OA\Parameter(name="id", in="path", description="Id of Detail", required=true,
      *        @OA\Schema(type="integer")
      *    ),
      *     @OA\Response(
@@ -80,11 +80,11 @@ class BookController extends Controller
      *     )
      * )
      */
-    public function getBook($id): \Illuminate\Foundation\Application|\Illuminate\Http\Response|JsonResponse|Application|ResponseFactory
+    public function getItem($id): Application|\Illuminate\Http\Response|JsonResponse|\Illuminate\Contracts\Foundation\Application|ResponseFactory
     {
         try {
-            $book = Book::find($id);
-            if ($book === null) {
+            $item = Item::find($id);
+            if ($item === null) {
                 return response([], 404);
             }
         } catch (Exception $e) {
@@ -95,26 +95,23 @@ class BookController extends Controller
         }
 
         return response()->json([
-            'data' => $book,
+            'data' => $item,
             'message' => 'Succeed'
         ], Response::HTTP_OK);
     }
 
     /**
      * @OA\Post(
-     *      path="/books",
-     *      operationId="storeBook",
-     *      tags={"Books"},
-     *      summary="Store book in DB",
-     *      description="Store book in DB",
+     *      path="/items",
+     *      operationId="storeItem",
+     *      tags={"Items"},
+     *      summary="Store item in DB",
+     *      description="Store item in DB",
      *      @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"title", "author", "year", "description"},
-     *            @OA\Property(property="title", type="string", format="string", example="Harry Potter"),
-     *            @OA\Property(property="author", type="string", format="string", example="Sergey Abraztsou"),
-     *            @OA\Property(property="year", type="string", format="string", example="1988"),
-     *            @OA\Property(property="description", type="string", format="string", example="Cool Story ab'ut love and magic!"),
+     *            required={"category_id"},
+     *            @OA\Property(property="category_id", type="integer", format="integer", example="1"),
      *         ),
      *      ),
      *      @OA\Response(
@@ -126,11 +123,11 @@ class BookController extends Controller
      *     )
      * )
      */
-    public function createBook(Request $request): \Illuminate\Foundation\Application|\Illuminate\Http\Response|JsonResponse|Application|ResponseFactory
+    public function createItem(Request $request): Application|\Illuminate\Http\Response|JsonResponse|\Illuminate\Contracts\Foundation\Application|ResponseFactory
     {
         try {
-            $book = Book::create($request->all());
-            if (!$book) {
+            $item = Item::create($request->all());
+            if (!$item) {
                 return response([], 400);
             }
         } catch (Exception $e) {
@@ -141,29 +138,26 @@ class BookController extends Controller
         }
 
         return response()->json([
-            'data' => $book,
+            'data' => $item,
             'message' => 'Succeed'
         ], Response::HTTP_OK);
     }
 
     /**
      * @OA\Put(
-     *      path="/books/{id}",
-     *      operationId="updateBook",
-     *      tags={"Books"},
-     *      summary="Update book in DB",
-     *      description="Update book in DB",
-     *      @OA\Parameter(name="id", in="path", description="Id of Book", required=true,
+     *      path="/items/{id}",
+     *      operationId="updateItem",
+     *      tags={"Items"},
+     *      summary="Update item in DB",
+     *      description="Update item in DB",
+     *      @OA\Parameter(name="id", in="path", description="Id of Item", required=true,
      *          @OA\Schema(type="integer")
      *      ),
      *      @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"title", "author", "year", "description"},
-     *            @OA\Property(property="title", type="string", format="string", example="Harry Potter"),
-     *            @OA\Property(property="author", type="string", format="string", example="Sergey Abraztsou"),
-     *            @OA\Property(property="year", type="string", format="string", example="1988"),
-     *            @OA\Property(property="description", type="string", format="string", example="Cool Story ab'ut love and magic!"),
+     *            required={"parent_id", "isActive", "isDeleted", "isActive", "isDeleted"},
+     *            @OA\Property(property="parent_id", type="integer", format="integer", example="2"),
      *            @OA\Property(property="isActive", type="integer", format="integer", example="0"),
      *            @OA\Property(property="isDeleted", type="integer", format="integer", example="1"),
      *         ),
@@ -177,14 +171,14 @@ class BookController extends Controller
      *      )
      * )
      */
-    public function updateBook(Request $request, $id): \Illuminate\Foundation\Application|\Illuminate\Http\Response|JsonResponse|Application|ResponseFactory
+    public function updateItem(Request $request, $id): Application|\Illuminate\Http\Response|JsonResponse|\Illuminate\Contracts\Foundation\Application|ResponseFactory
     {
         try {
-            $book = Book::find($id);
-            if ($book === null) {
+            $item = Item::find($id);
+            if ($item === null) {
                 return response([], 400);
             }
-            $book->update($request->all());
+            $item->update($request->all());
         } catch (Exception $e) {
             return response()->json([
                 'data' => [],
@@ -193,18 +187,18 @@ class BookController extends Controller
         }
 
         return response()->json([
-            'data' => $book,
+            'data' => $item,
             'message' => 'Succeed'
         ], Response::HTTP_OK);
     }
 
     /**
      * @OA\Delete(
-     *     path="/books/{id}",
-     *     operationId="deleteBook",
-     *     summary="Delete a book",
-     *     tags={"Books"},
-     *     description="Delete book from DB",
+     *     path="/items/{id}",
+     *     operationId="deleteItem",
+     *     summary="Delete a item",
+     *     tags={"Items"},
+     *     description="Delete item from DB",
      *     @OA\Parameter(
      *          name="id",
      *          in="path",
@@ -223,15 +217,15 @@ class BookController extends Controller
      *      )
      * )
      */
-    public function deleteBook($id): \Illuminate\Foundation\Application|\Illuminate\Http\Response|JsonResponse|Application|ResponseFactory
+    public function deleteItem($id): Application|\Illuminate\Http\Response|JsonResponse|\Illuminate\Contracts\Foundation\Application|ResponseFactory
     {
         try {
-            $book = Book::find($id);
-            if ($book === null) {
+            $item = Item::find($id);
+            if ($item === null) {
                 return response([], 400);
             }
-            $book->isDeleted = 1;
-            $book->save();
+            $item->isDeleted = 1;
+            $item->save();
         } catch (Exception $e) {
             return response()->json([
                 'data' => [],
@@ -240,7 +234,7 @@ class BookController extends Controller
         }
 
         return response()->json([
-            'data' => $book,
+            'data' => $item,
             'message' => 'Succeed'
         ], Response::HTTP_OK);
     }

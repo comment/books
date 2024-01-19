@@ -12,7 +12,7 @@ class Book extends Model
     protected $table = 'books';
 
     protected $fillable = [
-        'id', 'title', 'author', 'year', 'description'
+        'id', 'title', 'author', 'year', 'description', 'isActive', 'isDeleted'
     ];
     protected $guarded = ['id'];
 }
