@@ -26,7 +26,7 @@
                 ],
                 "summary": "Get list of books",
                 "description": "Get list of books",
-                "operationId": "index",
+                "operationId": "indexBook",
                 "parameters": [
                     {
                         "name": "limit",
@@ -84,7 +84,7 @@
                 ],
                 "summary": "Store book in DB",
                 "description": "Store book in DB",
-                "operationId": "store",
+                "operationId": "storeBook",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -153,7 +153,7 @@
                 ],
                 "summary": "Get Book Detail",
                 "description": "Get Book Detail",
-                "operationId": "show",
+                "operationId": "showBook",
                 "parameters": [
                     {
                         "name": "id",
@@ -191,9 +191,9 @@
                 "tags": [
                     "Books"
                 ],
-                "summary": "Update article in DB",
-                "description": "Update article in DB",
-                "operationId": "update",
+                "summary": "Update book in DB",
+                "description": "Update book in DB",
+                "operationId": "updateBook",
                 "parameters": [
                     {
                         "name": "id",
@@ -236,6 +236,16 @@
                                         "type": "string",
                                         "format": "string",
                                         "example": "Cool Story ab'ut love and magic!"
+                                    },
+                                    "isActive": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "0"
+                                    },
+                                    "isDeleted": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "1"
                                     }
                                 },
                                 "type": "object"
@@ -270,12 +280,553 @@
                     "Books"
                 ],
                 "summary": "Delete a book",
-                "operationId": "e57751810ccf10b92c44975ec632167e",
+                "description": "Delete book from DB",
+                "operationId": "deleteBook",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "id that to be updated isDelete = 1",
+                        "description": "id that to be updated isDeleted = 1",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/categories": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get list of categories",
+                "description": "Get list of categories",
+                "operationId": "indexCategory",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "limit",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "the page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "description": "order by title 'asc' or 'desc'",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Store category in DB",
+                "description": "Store category in DB",
+                "operationId": "storeCategory",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "parent_id"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "Спорт"
+                                    },
+                                    "parent_id": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/categories/{id}": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Get Category Detail",
+                "description": "Get Category Detail",
+                "operationId": "showCategory",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of Category",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Update category in DB",
+                "description": "Update category in DB",
+                "operationId": "updateCategory",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of Category",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "parent_id",
+                                    "isActive",
+                                    "isDeleted"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "Туризм"
+                                    },
+                                    "parent_id": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "2"
+                                    },
+                                    "isActive": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "0"
+                                    },
+                                    "isDeleted": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Delete a category",
+                "description": "Delete category from DB",
+                "operationId": "deleteCategory",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id that to be updated isDeleted = 1",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/items": {
+            "get": {
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Get list of items",
+                "description": "Get list of items",
+                "operationId": "indexItem",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "limit",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "the page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "description": "order by category_id 'asc' or 'desc'",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Store item in DB",
+                "description": "Store item in DB",
+                "operationId": "storeItem",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "category_id"
+                                ],
+                                "properties": {
+                                    "category_id": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/items/{id}": {
+            "get": {
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Get Item Detail",
+                "description": "Get Detail Detail",
+                "operationId": "showItem",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of Detail",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Update item in DB",
+                "description": "Update item in DB",
+                "operationId": "updateItem",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of Item",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "parent_id",
+                                    "isActive",
+                                    "isDeleted",
+                                    "isActive",
+                                    "isDeleted"
+                                ],
+                                "properties": {
+                                    "parent_id": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "2"
+                                    },
+                                    "isActive": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "0"
+                                    },
+                                    "isDeleted": {
+                                        "type": "integer",
+                                        "format": "integer",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": "200"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Delete a item",
+                "description": "Delete item from DB",
+                "operationId": "deleteItem",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id that to be updated isDeleted = 1",
                         "required": true,
                         "schema": {
                             "type": "integer"
