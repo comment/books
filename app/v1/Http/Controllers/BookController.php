@@ -202,7 +202,7 @@ class BookController extends Controller
      *     @OA\Parameter(
      *          name="id",
      *          in="path",
-     *          description="id that to be updated isDelete = 1",
+     *          description="id that to be updated isDeleted = 1",
      *          required=true,
      *          @OA\Schema(
      *              type="integer"
