@@ -9,9 +9,12 @@ use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\v1\Traits\BuildTree;
 
 class CategoryController extends Controller
 {
+
+    use BuildTree;
 
     /**
      * @OA\Get(
@@ -41,6 +44,7 @@ class CategoryController extends Controller
 
     public function allCategories(Request $request): JsonResponse
     {
+        //dd($this::buildTree(Category::all()->toArray()));
         $limit = $request->limit ?: 15;
         $order = $request->order == 'asc' ? 'asc' : 'desc';
         try {

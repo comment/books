@@ -31,5 +31,23 @@ class CategorySeeder extends Seeder
                 'parent_id' => 0,
             ],
         );
+        DB::table('categories')->insert(
+            [
+                'title' => 'Эзотерика',
+                'parent_id' => 1,
+            ],
+        );
+        DB::table('categories')->insert(
+            [
+                'title' => 'Гадания',
+                'parent_id' => 1,
+            ],
+        );
+        DB::table('categories')->insert(
+            [
+                'title' => 'Ноутбуки',
+                'parent_id' => 2,
+            ],
+        );
     }
 }
