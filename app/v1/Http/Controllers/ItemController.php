@@ -45,7 +45,7 @@ class ItemController extends Controller
         $order = $request->order == 'asc' ? 'asc' : 'desc';
         try {
             $items = Item::orderBy('category_id', $order)
-                ->select('id', 'category_id')
+                ->select('id', 'category_id', 'title', 'author', 'year', 'state', 'about_state', 'price', 'image', 'note')
                 ->where('isActive', 1)
                 ->paginate($limit);
         } catch (Exception $e) {
@@ -238,4 +238,62 @@ class ItemController extends Controller
             'message' => 'Succeed'
         ], Response::HTTP_OK);
     }
+
+    /**
+     * @OA\Post(
+     *     path="/items/{id}",
+     *     operationId="uploadImages",
+     *     summary="uploadImages",
+     *     tags={"Items"},
+     *     description="add image to item",
+     *     @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          description="adding image to item",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *           response=200, description="Success",
+     *           @OA\JsonContent(
+     *              @OA\Property(property="status", type="integer", example="200"),
+     *              @OA\Property(property="data",type="object")
+     *           )
+     *      )
+     * )
+     */
+    public function uploadImage(Request $request, $itemId): Application|\Illuminate\Http\Response|JsonResponse|\Illuminate\Contracts\Foundation\Application|ResponseFactory
+    {
+        try {
+            $item = Item::find($itemId);
+            if ($item === null) {
+                return response([], 400);
+            }
+
+            $arrFilesNameResponse = array();
+            if($request->hasFile('image')) {
+                foreach ($request->file('image') as $index=>$file) {
+                    $originalName = $file->getClientOriginalName();
+                    $arrOriginalName = explode('.', $originalName);
+                    $newName = $itemId . '_' . $index+1 . '.' . $arrOriginalName[1];
+                    $file->move(public_path() . '/storage/images/', $newName);
+                    $arrFilesNameResponse[] = $newName;
+                }
+            }
+        } catch (Exception $e) {
+            return response()->json([
+                'data' => [],
+                'message' => $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response()->json([
+            'data' => $item,
+            'files_uploaded' => $arrFilesNameResponse,
+            'message' => 'Succeed'
+        ], Response::HTTP_OK);
+    }
 }
+

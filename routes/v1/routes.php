@@ -13,3 +13,15 @@ Route::prefix('categories')->as('categories:')->group(
 Route::prefix('items')->as('items:')->group(
     base_path('routes/v1/items.php'),
 );
+
+Route::get('/unauthenticated', function () {
+    return response()->json(
+        [
+            'errors' => [
+                'status' => 401,
+                'message' => 'Unauthenticated',
+            ]
+        ],
+        401
+    );
+});
